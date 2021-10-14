@@ -132,6 +132,7 @@ Instead of passing issue-keys, a Jira Query Language command can be passed with 
 ```bash
 $ python jira-dependency-graph.py --cookie <JSESSIONID> --jql 'project = JRADEV'
 ```
+Pass -L along with --jql to limit issue walking to only issues retrieved by the JQL query.
 
 
 Usage without Google Graphviz API:
