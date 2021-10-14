@@ -65,7 +65,7 @@ class JiraSearch(object):
 
 
 def build_graph_data(start_issue_key, jira, excludes, show_directions, directions, includes, issue_excludes,
-                     ignore_closed, ignore_epic, ignore_subtasks, traverse, word_wrap):
+                     ignore_closed, ignore_epic, ignore_subtasks, traverse, word_wrap, limit):
     """ Given a starting image key and the issue-fetching function build up the GraphViz data representing relationships
         between issues. This will consider both subtasks and issue links.
     """
@@ -127,6 +127,10 @@ def build_graph_data(start_issue_key, jira, excludes, show_directions, direction
                 log('Skipping ' + linked_issue_key + ' - linked key is Closed')
                 return
 
+        if limit is not None and linked_issue_key not in limit:
+            log('Skipping ' + linked_issue_key + ' - not in explicit limit list')
+            return
+
         if includes not in linked_issue_key:
             return
 
@@ -165,6 +169,10 @@ def build_graph_data(start_issue_key, jira, excludes, show_directions, direction
 
         if not traverse and ((project_prefix + '-') not in issue_key):
             log('Skipping ' + issue_key + ' - not traversing to a different project')
+            return graph
+
+        if issue_key in issue_excludes:
+            log('Skipping ' + issue_key + ' - explicitly excluded')
             return graph
 
         graph.append(create_node_text(issue_key, fields, islink=False))
@@ -247,6 +255,7 @@ def parse_args():
     parser.add_argument('-s', '--show-directions', dest='show_directions', default=['inward', 'outward'], help='which directions to show (inward, outward)')
     parser.add_argument('-d', '--directions', dest='directions', default=['inward', 'outward'], help='which directions to walk (inward, outward)')
     parser.add_argument('--jql', dest='jql_query', default=None, help='JQL search for issues (e.g. \'project = JRADEV\')')
+    parser.add_argument('-L', '--limit-to-jql', dest='limit_to_jql', default=False, action='store_true', help='Limit to only tickets returned by JQL query')
     parser.add_argument('-ns', '--node-shape', dest='node_shape', default='box', help='which shape to use for nodes (circle, box, ellipse, etc)')
     parser.add_argument('-t', '--ignore-subtasks', action='store_true', default=False, help='Don''t include sub-tasks issues')
     parser.add_argument('-T', '--dont-traverse', dest='traverse', action='store_false', default=True, help='Do not traverse to other projects')
@@ -283,14 +292,18 @@ def main():
 
     jira = JiraSearch(options.jira_url, auth, options.no_verify_ssl)
 
+    limit = None
     if options.jql_query is not None:
         options.issues.extend(jira.list_ids(options.jql_query))
+        if options.limit_to_jql is True:
+            limit = options.issues
 
     graph = []
+
     for issue in options.issues:
         graph = graph + build_graph_data(issue, jira, options.excludes, options.show_directions, options.directions,
                                          options.includes, options.issue_excludes, options.closed, options.ignore_epic,
-                                         options.ignore_subtasks, options.traverse, options.word_wrap)
+                                         options.ignore_subtasks, options.traverse, options.word_wrap, limit)
 
     if options.local:
         print_graph(filter_duplicates(graph), options.node_shape)
