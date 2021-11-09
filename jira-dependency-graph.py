@@ -29,7 +29,7 @@ class JiraSearch(object):
         self.url = url + '/rest/api/latest'
         self.auth = auth
         self.no_verify_ssl = no_verify_ssl
-        self.fields = ','.join(['key', 'summary', 'status', 'description', 'issuetype', 'issuelinks', 'subtasks'])
+        self.fields = ','.join(['key', 'summary', 'status', 'description', 'issuetype', 'issuelinks', 'subtasks', 'customfield_10008'])
 
     def get(self, uri, params={}):
         headers = {'Content-Type' : 'application/json'}
@@ -72,8 +72,10 @@ def build_graph_data(start_issue_key, jira, excludes, show_directions, direction
     def get_key(issue):
         return issue['key']
 
-    def get_status_color(status_field):
+    def get_status_color(status_field, ready):
         status = status_field['statusCategory']['name'].upper()
+        if not ready:
+            return 'gray83'
         if status == 'IN PROGRESS':
             return 'yellow'
         elif status == 'DONE':
@@ -83,6 +85,12 @@ def build_graph_data(start_issue_key, jira, excludes, show_directions, direction
     def create_node_text(issue_key, fields, islink=True):
         summary = fields['summary']
         status = fields['status']
+        storyPoints = 0
+        ready = False
+        if 'customfield_10008' in fields:
+            if fields['customfield_10008']:
+                storyPoints = int(fields['customfield_10008'])
+                ready = True
 
         if word_wrap == True:
             if len(summary) > MAX_SUMMARY_LENGTH:
@@ -97,8 +105,12 @@ def build_graph_data(start_issue_key, jira, excludes, show_directions, direction
         # log('node ' + issue_key + ' status = ' + str(status))
 
         if islink:
-            return '"{}\\n({})"'.format(issue_key, summary)
-        return '"{}\\n({})" [href="{}", fillcolor="{}", style=filled]'.format(issue_key, summary, jira.get_issue_uri(issue_key), get_status_color(status))
+            return '"{}"'.format(issue_key)
+        if ready:
+            return '"{}" [label="{} ({})\\n{}", href="{}", fillcolor="{}", style=filled]'.format(issue_key, issue_key, storyPoints, summary, jira.get_issue_uri(issue_key), get_status_color(status, ready))
+        return '"{}" [label="{}\\n{}", href="{}", fillcolor="{}", style=filled]'.format(issue_key, issue_key, summary, jira.get_issue_uri(issue_key), get_status_color(status, ready))
+
+
 
     def process_link(fields, issue_key, link):
         if 'outwardIssue' in link:
@@ -222,6 +234,10 @@ def create_graph_image(graph_data, image_file, node_shape):
         [1]: http://code.google.com/apis/chart/docs/gallery/graphviz.html
     """
     digraph = 'digraph{node [shape=' + node_shape +'];%s}' % ';'.join(graph_data)
+
+    text_file = open("digraph.txt", "w")
+    n = text_file.write(digraph)
+    text_file.close()
 
     response = requests.post(GOOGLE_CHART_URL, data = {'cht':'gv', 'chl': digraph})
 
