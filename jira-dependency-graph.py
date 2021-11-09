@@ -29,7 +29,7 @@ class JiraSearch(object):
         self.url = url + '/rest/api/latest'
         self.auth = auth
         self.no_verify_ssl = no_verify_ssl
-        self.fields = ','.join(['key', 'summary', 'status', 'description', 'issuetype', 'issuelinks', 'subtasks', 'customfield_10008'])
+        self.fields = ','.join(['key', 'summary', 'status', 'description', 'issuetype', 'issuelinks', 'subtasks', 'customfield_10008', 'labels'])
 
     def get(self, uri, params={}):
         headers = {'Content-Type' : 'application/json'}
@@ -85,6 +85,9 @@ def build_graph_data(start_issue_key, jira, excludes, show_directions, direction
     def create_node_text(issue_key, fields, islink=True):
         summary = fields['summary']
         status = fields['status']
+        labels = []
+        if 'labels' in fields:
+            labels = fields['labels']
         storyPoints = 0
         ready = False
         if 'customfield_10008' in fields:
@@ -104,12 +107,16 @@ def build_graph_data(start_issue_key, jira, excludes, show_directions, direction
         summary = summary.replace('"', '\\"')
         # log('node ' + issue_key + ' status = ' + str(status))
 
+        label = "{}".format(issue_key)
+        if ready:
+            label = label + " ({})".format(storyPoints)
+        label = label + "\\n{}".format(summary)
+        if len(labels) > 0:
+            label = label + '\\n[{}]'.format('|'.join(labels))
+
         if islink:
             return '"{}"'.format(issue_key)
-        if ready:
-            return '"{}" [label="{} ({})\\n{}", href="{}", fillcolor="{}", style=filled]'.format(issue_key, issue_key, storyPoints, summary, jira.get_issue_uri(issue_key), get_status_color(status, ready))
-        return '"{}" [label="{}\\n{}", href="{}", fillcolor="{}", style=filled]'.format(issue_key, issue_key, summary, jira.get_issue_uri(issue_key), get_status_color(status, ready))
-
+        return '"{}" [label="{}", href="{}", fillcolor="{}", style=filled]'.format(issue_key, label, jira.get_issue_uri(issue_key), get_status_color(status, ready))
 
 
     def process_link(fields, issue_key, link):
@@ -152,7 +159,10 @@ def build_graph_data(start_issue_key, jira, excludes, show_directions, direction
         arrow = ' => ' if direction == 'outward' else ' <= '
         log(issue_key + arrow + link_type + arrow + linked_issue_key)
 
-        extra = ',color="red"' if link_type == "blocks" else ""
+        if fields['status']['name'] == 'Closed' and link_type == "blocks":
+            extra = ',color="black"'
+        else:
+            extra = ',color="red"' if link_type == "blocks" else ""
 
         if direction not in show_directions:
             node = None
