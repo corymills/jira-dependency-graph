@@ -1,0 +1,77 @@
+graph TD
+ITW-5133["Story - ITW-5133 (0)\nIntent List - Frontend
+Integration - Import Intent
+Commit"]:::classgreen
+ITW-5112["Story - ITW-5112 (0)\nIntent List - React - Add
+Actions Menu - Backend
+Integration"]:::classgreen
+ITW-5077["Story - ITW-5077 (0)\nIntent List - Display Commit
+Errors"]:::classgreen
+ITW-4960["Story - ITW-4960 (0)\nEdit Modals - Common Error
+Component"]:::classgreen
+ITW-4830["Story - ITW-4830 (0)\nCondition List - React - Add
+Actions Menu"]:::classgreen
+ITW-4793["Story - ITW-4793 (0)\nIntent List - React - Copy to
+Client Intent Modal"]:::classgreen
+ITW-4793 --> |"relates to"| ITW-4792
+ITW-4792["Story - ITW-4792 (0)\nIntent List - Backend
+Integration - Copy to Client
+Intent"]:::classgreen
+ITW-4792 --> |"relates to"| ITW-4793
+ITW-4791["Story - ITW-4791 (0)\nIntent List - Backend
+Integration - Fetch Intents
+for Intent List Page"]:::classgreen
+ITW-4791 --> |"relates to"| ITW-4758
+ITW-4758["Story - ITW-4758 (0)\nIntent List - React - Add
+Intent List Table"]:::classgreen
+ITW-4758 --> |"blocks"| ITW-4989
+ITW-4758 --> |"relates to"| ITW-4791
+ITW-4790["Story - ITW-4790 (0)\nIntent List - React - Client
+Intent Revert Modal"]:::classgreen
+ITW-4789["Story - ITW-4789 (0)\nIntent List - Backend
+Integration - Client Custom
+Intent Delete"]:::classgreen
+ITW-4789 --> |"relates to"| ITW-4785
+ITW-4785["Story - ITW-4785 (0)\nIntent List - React - Client
+Intent Delete Modal"]:::classgreen
+ITW-4785 --> |"relates to"| ITW-4789
+ITW-4784["Story - ITW-4784 (0)\nIntent List - Backend
+Integration - System Intent
+Delete"]:::classgreen
+ITW-4784 --> |"relates to"| ITW-4783
+ITW-4783["Story - ITW-4783 (0)\nIntent List - React - System
+Intent Delete Modal"]:::classgreen
+ITW-4783 --> |"relates to"| ITW-4784
+ITW-4782["Story - ITW-4782 (0)\nIntent List - Backend
+Integration - Export Intent
+JSON"]:::classgreen
+ITW-4782 --> |"relates to"| ITW-4777
+ITW-4777["Story - ITW-4777 (0)\nIntent List - React - Export
+Intent Modal"]:::classgreen
+ITW-4777 --> |"relates to"| ITW-4782
+ITW-4781["Story - ITW-4781 (0)\nIntent List - Backend
+Integration - Import Intent
+Commit"]:::classgreen
+ITW-4781 --> |"relates to"| ITW-4778
+ITW-4778["Story - ITW-4778 (0)\nIntent List - React - Import
+Intent Modal"]:::classgreen
+ITW-4778 --> |"relates to"| ITW-4781
+ITW-4774["Story - ITW-4774 (0)\nIntent List - React - Search
+and Filter\n[non-mvp]"]:::classgreen
+ITW-4760["Story - ITW-4760 (0)\nIntent List - React - Add
+Actions Menu - Frontend"]:::classgreen
+ITW-4759["Story - ITW-4759 (0)\nIntent List - React - Add
+Information Icons"]:::classgreen
+ITW-4754["Story - ITW-4754 (0)\nIntent List - React - 'Add New
+Intent' and 'Import Intent'
+buttons"]:::classgreen
+ITW-4752["Story - ITW-4752 (0)\nIntent List - React - Create
+Page and Submenu Click Action"]:::classgreen
+ITW-4731["Story - ITW-4731 (0)\nTop Nav - Benefits Assistant
+Dropdown"]:::classgreen
+ITW-4731 --> |"blocks"| ITW-4824
+ITW-4730["Story - ITW-4730 (0)\nTop Nav - Create React Feature
+Toggle"]:::classgreen
+classDef classgray stroke:#888,stroke-width:4px;
+classDef classgreen stroke:green,stroke-width:4px;
+classDef classyellow stroke:yellow,stroke-width:4px;

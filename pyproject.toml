@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "jira-dependency-graph"
+version = "0.1.0"
+description = ""
+authors = ["cmills <cmills@businessolver.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+streamlit = "^1.36.0"
+streamlit-mermaid = "^0.2.0"
+graphviz = "^0.20.3"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
